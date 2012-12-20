@@ -1,0 +1,26 @@
+<appwizard>	
+	<introduction>		
+		<name>ci-sae</name>		
+		<author>0gopogo</author>		
+		<icon>default_app_icon</icon>		
+		<homepage>http://code.google.com/p/ci-sae/</homepage>		
+		<category>独立网站</category>				
+		<description>		
+			<![CDATA[		ci-sae是codeIgniter在sae上的非官方分支.		]]>		
+		</description>	
+	</introduction>	
+	
+	<platform>		
+		<services>			
+			<service>			
+			</service>		
+		</services>		
+		
+		<appconfig>				
+			<tpl>						</tpl>			
+			<!-- form这段可省,只有当config中有需要动态配置的内容时,才写此段 -->		
+		</appconfig>	
+	</platform>	
+	
+	<code>	</code>
+</appwizard>

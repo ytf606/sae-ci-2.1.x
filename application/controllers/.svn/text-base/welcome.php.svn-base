@@ -1,0 +1,103 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+class Welcome extends CI_Controller {
+
+	/**
+	 * Index Page for this controller.
+	 *
+	 * Maps to the following URL
+	 * 		http://example.com/index.php/welcome
+	 *	- or -  
+	 * 		http://example.com/index.php/welcome/index
+	 *	- or -
+	 * Since this controller is set as the default controller in 
+	 * config/routes.php, it's displayed at http://example.com/
+	 *
+	 * So any other public methods not prefixed with an underscore will
+	 * map to /index.php/welcome/<method_name>
+	 * @see http://codeigniter.com/user_guide/general/urls.html
+	 */
+	public function index()
+	{
+		date_default_timezone_set("PRC");
+		$sql = "select * from blog_message";
+		$query = $this->db->query($sql);
+		if($query->num_rows() > 0){
+			foreach($query->result() as $row){
+				//var_dump($row);
+			}
+		}
+		
+		
+		//$this->output->cache(1);
+		$this->load->view('welcome_message');
+	}
+
+	public function weibo(){
+		$config['client_id'] = $this->config->item('WB_AKEY');
+		$config['client_secret'] = $this->config->item('WB_SKEY');
+		$this->load->library('Weibooauth',$config);
+		$this->load->helper('url');
+		//$o = new SaeTOAuthv2($this->config->item('WB_AKEY'), $this->config->item('WB_SKEY'));
+		
+		//$code_url = $o->getAuthorizeURL(base_url().index_page().'/welcome/callback');
+		$code_url = $this->weibooauth->getAuthorizeURL($this->config->item('WB_CALLBACK_URL'));
+
+		echo "<a href=".$code_url.">Use Oauth to login</a>";
+		$this->output->enable_profiler(TRUE);
+	}
+
+	public function callback(){
+		$config['client_id'] = $this->config->item('WB_AKEY');
+		$config['client_secret'] = $this->config->item('WB_SKEY');
+		$this->load->library('Weibooauth', $config);
+		$this->load->helper('url');
+		//$o = new SaeTOAuthv2($this->config->item('WB_AKEY'),$this->config->item('WB_SKEY'));
+		
+
+		if(isset($_REQUEST['code'])){
+			$keys = array();
+			$keys['code'] = $_REQUEST['code'];
+			$keys['redirect_uri'] = $this->config->item('WB_CALLBACK_URL');
+			try{
+				//$token = $o->getAccessToken('code', $keys);
+				$token = $this->weibooauth->getAccessToken('code', $keys);
+			}catch(OAuthException $e){
+			
+			}
+		}
+
+		if(isset($token)){
+			$_SESSION['token'] = $token;
+			//setcookie('webojs_'.$o->client_id,http_build_query($token));
+			setcookie('webojs_'.$this->weibooauth->client_id,http_build_query($token));
+			echo "授权完成,<a href='".base_url().index_page()."/welcome/weibolist'>进入微博页面</a>";
+		}else{
+			echo "授权失败";
+		}
+	}
+
+	public function weibolist(){
+		$config['client_id'] = $this->config->item('WB_AKEY');
+		$config['client_secret'] = $this->config->item('WB_SKEY');
+		$config['access_token'] = $_SESSION['token']['access_token'];
+		$this->load->library("Weiboclient",$config);
+		//$c = new SaeTClientV2($this->config->item('WB_AKEY'),$this->config->item('WB_SKEY'), $_SESSION['token']['access_token']);
+		
+		//$ms = $c->home_timeline();
+		//$uid_get = $c->get_uid();
+		$ms = $this->weiboclient->home_timeline();
+		$uid_get = $this->weiboclient->get_uid();
+		$uid = $uid_get['uid'];
+		//$user_message = $c->show_user_by_id($uid);
+		$user_message = $this->weiboclient->show_user_by_id($uid);
+		$data = array(
+			'user_message' => $user_message,
+			'ms' => $ms,
+		);
+		$this->load->view('weibo_list',$data);
+		$this->output->enable_profiler(TRUE);
+	}
+}
+
+/* End of file welcome.php */
+/* Location: ./application/controllers/welcome.php */
