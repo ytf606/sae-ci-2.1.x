@@ -18,7 +18,7 @@ CodeIgniter 是一个小巧但功能强大的 PHP 框架，作为一个简单而
 可能修改的地方还不止这些，只是时间稍长一点没有，例子当时测试完后就删除了，不过当你在SAE平台上切实使用一下的话就会体会到其它修改的地方带来的便利。
 
 还有一点，在此版本中我加入了weibo认证的模块，需要在config.php文件最后的添加自己的weibo应用的appkey和skey以及对应的回调地址。然后在control对应的页面中添加代码如下：
-<?php 
+ 
 if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -78,6 +78,6 @@ class Weibo extends CI_Controller {
 		$this->output->enable_profiler(TRUE);
 	}
 }
-?>
+
 
 注：如果我想起来其他的更改会在此说明文档重做说明的，希望各位CodeIgniter的大牛们发现问题及时反馈，业余移植的CodeIgniter多少都会存在点问题，希望能够共完善其中的问题，谢谢！
