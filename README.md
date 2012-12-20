@@ -19,10 +19,13 @@ CodeIgniter 是一个小巧但功能强大的 PHP 框架，作为一个简单而
 
 还有一点，在此版本中我加入了weibo认证的模块，需要在config.php文件最后的添加自己的weibo应用的appkey和skey以及对应的回调地址。然后在control对应的页面中添加代码如下
 <?php 
+
 if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
+
 session_start();
+
 class Weibo extends CI_Controller {
 	public $config_weibo = array();
 	public function __construct(){
@@ -30,11 +33,11 @@ class Weibo extends CI_Controller {
 		$this->config_weibo['client_id'] = $this->config->item('WB_AKEY');
 		$this->config_weibo['client_secret'] = $this->config->item('WB_SKEY');
 	}
+    
     public function index(){
 		$this->load->library('Weibooauth',$this->config_weibo);
 		$this->load->helper('url');
 		$code_url = $this->weibooauth->getAuthorizeURL($this->config->item('WB_CALLBACK_URL'));
-
 		echo "<a href=".$code_url.">Use Oauth to login</a>";
 		$this->output->enable_profiler(TRUE);
 	}
