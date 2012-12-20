@@ -19,9 +19,10 @@ CodeIgniter 是一个小巧但功能强大的 PHP 框架，作为一个简单而
 
 还有一点，在此版本中我加入了weibo认证的模块，需要在config.php文件最后的添加自己的weibo应用的appkey和skey以及对应的回调地址。然后在control对应的页面中添加代码如下：
 <?php 
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 session_start();
-
 class Weibo extends CI_Controller {
 	public $config_weibo = array();
 	public function __construct(){
@@ -40,26 +41,26 @@ class Weibo extends CI_Controller {
 	}
 
 	public function callback(){
-	$this->load->library('Weibooauth', $this->config_weibo);
-	$this->load->helper('url');
-
-	if(isset($_REQUEST['code'])){
-		$keys = array();
-		$keys['code'] = $_REQUEST['code'];
-		$keys['redirect_uri'] = $this->config->item('WB_CALLBACK_URL');
-		try{
-			$token = $this->weibooauth->getAccessToken('code', $keys);
-			}catch(OAuthException $e){
-			}
-		}
-		if(isset($token)){
-			$_SESSION['token'] = $token;
-			setcookie('webojs_'.$this->weibooauth->client_id,http_build_query($token));
-			echo "授权完成,<a href='".base_url().index_page()."/weibo/weibolist'>进入微博页面</a>";
-		}else{
-			echo "授权失败";
-		}
-	}
+        $this->load->library('Weibooauth', $this->config_weibo);
+        $this->load->helper('url');
+        if(isset($_REQUEST['code'])){
+            $keys = array();
+            $keys['code'] = $_REQUEST['code'];
+            $keys['redirect_uri'] = $this->config->item('WB_CALLBACK_URL');
+            try{
+                $token = $this->weibooauth->getAccessToken('code', $keys);
+            }catch(OAuthException $e){
+                
+            }
+            if(isset($token)){
+                $_SESSION['token'] = $token;
+                setcookie('webojs_'.$this->weibooauth->client_id,http_build_query($token));
+                echo "授权完成,<a href='".base_url().index_page()."/weibo/weibolist'>进入微博页面</a>";
+            }else{
+                echo "授权失败";
+            }
+        }
+    }
 
 	public function weibolist(){
 		$this->config_weibo['access_token'] = $_SESSION['token']['access_token'];
@@ -78,4 +79,5 @@ class Weibo extends CI_Controller {
 	}
 }
 ?>
+
 注：如果我想起来其他的更改会在此说明文档重做说明的，希望各位CodeIgniter的大牛们发现问题及时反馈，业余移植的CodeIgniter多少都会存在点问题，希望能够共完善其中的问题，谢谢！
